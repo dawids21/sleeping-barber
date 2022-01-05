@@ -7,6 +7,6 @@ typedef struct {
     int fives;
 } money_t;
 
-money_t get_change(int coins[3], int amount);
+money_t get_change(money_t available, int amount);
 
 #endif

@@ -2,7 +2,8 @@
 
 #include <string.h>
 
-money_t get_change(int coins[3], int amount) {
+money_t get_change(money_t available, int amount) {
+    int available_coins[3] = {available.ones, available.twos, available.fives};
     int values[3] = {1, 2, 5};
     int min_num_of_coins[amount + 1];
     int used[amount + 1][3];
@@ -27,7 +28,7 @@ money_t get_change(int coins[3], int amount) {
 
         for (int value = 0; value <= max_value; value++) {
             int current_value = values[value];
-            if (used[i - current_value][value] < coins[value]) {
+            if (used[i - current_value][value] < available_coins[value]) {
                 if (min_num_of_coins[i - current_value] != -1 && (min == -1 || min_num_of_coins[i - current_value] + 1 < min)) {
                     min = min_num_of_coins[i - current_value] + 1;
                     coin = value;
