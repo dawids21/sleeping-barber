@@ -1,0 +1,30 @@
+FRYZJER
+F - liczba fryzjerów
+N - liczba foteli
+while kolejka jest pusta {}
+pobierz klienta
+pobierz opłatę (skąd wie ile?)
+while brak wolnego fotela {}
+zablokuj jeden fotel (semafor)
+zrealizuj usługę
+zwolnij fotel (semafor)
+zablokuj kasę
+while brak możliwości wydania reszty {} (jak czekać na kasę bez blokowania jej)
+wylicz resztę
+pobierz resztę
+odblokuj kasę
+wydaj resztę
+
+KLIENT
+while pieniądze < cena fryzjera { zarabiaj; }
+if brak miejsca w poczekalni { zarabiaj dalej; }
+zajmij miejsce w poczekalni i czekaj na fryzjera
+odejmij pieniądze za usługę
+czekaj na koniec
+czekaj na resztę
+
+WSPÓLNE
+P - pojemność poczekalni
+poczekalnia[P]
+kasa -> struct
+fotele[N]
