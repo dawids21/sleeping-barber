@@ -13,4 +13,6 @@ money_t count_minimum_coins(money_t available, int amount);
 
 money_t count_maximum_coins(money_t available, int amount);
 
+int get_amount(money_t money);
+
 #endif

@@ -123,3 +123,7 @@ money_t count_maximum_coins(money_t available, int amount) {
 
     return result;
 }
+
+int get_amount(money_t money) {
+    return money.ones + 2 * money.twos + 5 * money.fives;
+}
