@@ -1,5 +1,5 @@
-#ifndef FRYZJERZY_CHANGE_H
-#define FRYZJERZY_CHANGE_H
+#ifndef FRYZJERZY_MONEY_H
+#define FRYZJERZY_MONEY_H
 
 typedef struct {
     int ones;

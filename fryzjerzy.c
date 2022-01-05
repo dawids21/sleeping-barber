@@ -9,7 +9,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#include "fryzjerzy_change.h"
+#include "fryzjerzy_money.h"
 
 #define SIZE_OF_WAITING_ROOM 2
 #define NUM_OF_CLIENTS 1
