@@ -24,6 +24,11 @@ typedef struct {
     client_t client;
 } waiting_room_element_t;
 
+typedef struct {
+    long client_id;
+    money_t change;
+} change_msg_t;
+
 #define EMPTY 1
 #define FULL 2
 
@@ -86,6 +91,13 @@ int main(int argc, char const *argv[]) {
     cash_machine->ones = 3;
     cash_machine->twos = 3;
     cash_machine->fives = 3;
+
+    // create queue for changes
+    int change_queue = msgget(IPC_PRIVATE, IPC_CREAT | 0600);
+    if (change_queue == -1) {
+        perror("Create waiting room");
+        exit(1);
+    }
 
     // HAIRDRESSER
     if (fork() == 0) {
