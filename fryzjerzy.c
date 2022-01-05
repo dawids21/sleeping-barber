@@ -92,6 +92,17 @@ int main(int argc, char const *argv[]) {
     cash_machine->twos = 3;
     cash_machine->fives = 3;
 
+    // create semaphor for cash_machine
+    int cash_machine_semaphor = semget(IPC_PRIVATE, 1, IPC_CREAT | 0600);
+    if (cash_machine_semaphor == -1) {
+        perror("Creating semaphor for cash machine");
+        exit(1);
+    }
+    if (semctl(cash_machine_semaphor, 0, SETVAL, 1) == -1) {
+        perror("Set value for clients semaphores");
+        exit(1);
+    }
+
     // create queue for changes
     int change_queue = msgget(IPC_PRIVATE, IPC_CREAT | 0600);
     if (change_queue == -1) {
