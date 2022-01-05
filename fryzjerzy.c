@@ -16,7 +16,7 @@
 
 typedef struct {
     int id;
-    int money;
+    money_t money;
 } client_t;
 
 typedef struct {
@@ -72,6 +72,21 @@ int main(int argc, char const *argv[]) {
         }
     }
 
+    // create cash machine
+    int cash_machine_id = shmget(IPC_PRIVATE, sizeof(money_t), 0);
+    if (cash_machine_id == -1) {
+        perror("Creating cash machine");
+        exit(1);
+    }
+    money_t *cash_machine = (money_t *)shmat(cash_machine_id, NULL, 0);
+    if (cash_machine == NULL) {
+        perror("Attaching cash machine");
+        exit(1);
+    }
+    cash_machine->ones = 3;
+    cash_machine->twos = 3;
+    cash_machine->fives = 3;
+
     // HAIRDRESSER
     if (fork() == 0) {
         srand(getpid());
@@ -107,7 +122,8 @@ int main(int argc, char const *argv[]) {
             element.mtype = FULL;
             client_t client;
             client.id = 0;
-            client.money = i;
+            money_t money = {2, 2, 2};
+            client.money = money;
             element.client = client;
             if (msgsnd(waiting_room, &element, sizeof(client_t), 0) == -1) {
                 perror("Add new client waiting room");
