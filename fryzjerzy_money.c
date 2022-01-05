@@ -48,3 +48,78 @@ money_t get_change(money_t available, int amount) {
     money_t change = {used[amount][0], used[amount][1], used[amount][2]};
     return change;
 }
+
+money_t count_minimum_coins(money_t available, int amount) {
+    money_t result = {0, 0, 0};
+
+    for (int i = 0; i < available.fives; i++) {
+        amount -= 5;
+        result.fives += 1;
+        if (amount <= 0) {
+            break;
+        }
+    }
+
+    if (amount <= 0) {
+        return result;
+    }
+
+    for (int i = 0; i < available.twos; i++) {
+        amount -= 2;
+        result.twos += 1;
+        if (amount <= 0) {
+            break;
+        }
+    }
+
+    if (amount <= 0) {
+        return result;
+    }
+
+    for (int i = 0; i < available.ones; i++) {
+        amount -= 1;
+        result.ones += 1;
+        if (amount <= 0) {
+            break;
+        }
+    }
+    return result;
+}
+
+money_t count_maximum_coins(money_t available, int amount) {
+    money_t result = {0, 0, 0};
+
+    for (int i = 0; i < available.ones; i++) {
+        amount -= 1;
+        result.ones += 1;
+        if (amount <= 0) {
+            break;
+        }
+    }
+
+    if (amount <= 0) {
+        return result;
+    }
+
+    for (int i = 0; i < available.twos; i++) {
+        amount -= 2;
+        result.twos += 1;
+        if (amount <= 0) {
+            break;
+        }
+    }
+
+    if (amount <= 0) {
+        return result;
+    }
+
+    for (int i = 0; i < available.fives; i++) {
+        amount -= 5;
+        result.fives += 1;
+        if (amount <= 0) {
+            break;
+        }
+    }
+
+    return result;
+}
