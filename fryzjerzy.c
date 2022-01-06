@@ -72,10 +72,7 @@ int main(int argc, char const *argv[]) {
     // CLIENT
     if (fork() == 0) {
         srand(getpid());
-        client client;
-        client.id = client_id;
-        money money = {2, 2, 2};
-        client.money = money;
+        client client = new_client(client_id, change_queue);
         log_num("start client", getpid());
         for (int i = 0; i < 100; i++) {
             usleep(rand() % 500000);

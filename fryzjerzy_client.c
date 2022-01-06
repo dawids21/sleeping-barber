@@ -11,3 +11,12 @@ int new_change_queue() {
         exit(1);
     }
 }
+
+client new_client(int id, int change_queue) {
+    client client;
+    client.id = id;
+    money money;
+    money.ones = 0;
+    money.twos = 0;
+    money.fives = 0;
+}

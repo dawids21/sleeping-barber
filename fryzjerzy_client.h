@@ -11,4 +11,6 @@ typedef struct client {
 
 int new_change_queue();
 
+client new_client(int id, int change_queue);
+
 #endif  // FRYZJERZY_CLIENT_H
