@@ -45,3 +45,17 @@ void add_cash(cash_machine cash_machine, money_t to_add) {
     cash_machine.cash->fives += to_add.fives;
     up(cash_machine.semaphor, 0);
 }
+
+money_t change(cash_machine cash_machine, int amount) {
+    down(cash_machine.semaphor, 0);
+    money_t change = get_change(*cash_machine.cash, amount);
+    if (change.ones == -1 && change.twos == -1 && change.fives == -1) {
+        up(cash_machine.semaphor, 0);
+        return change;
+    }
+    cash_machine.cash->ones -= change.ones;
+    cash_machine.cash->twos -= change.twos;
+    cash_machine.cash->fives -= change.fives;
+    up(cash_machine.semaphor, 0);
+    return change;
+}

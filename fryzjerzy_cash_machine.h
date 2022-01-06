@@ -12,4 +12,6 @@ cash_machine init();
 
 void add_cash(cash_machine cash_machine, money_t to_add);
 
+money_t change(cash_machine cash_machine, int amount);
+
 #endif
