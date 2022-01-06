@@ -4,7 +4,7 @@
 
 #include "fryzjerzy_logger.h"
 
-money_t get_change(money_t available, int amount) {
+money get_change(money available, int amount) {
     int available_coins[3] = {available.ones, available.twos, available.fives};
     int values[3] = {1, 2, 5};
     int min_num_of_coins[amount + 1];
@@ -48,16 +48,16 @@ money_t get_change(money_t available, int amount) {
     }
 
     if (min_num_of_coins[amount] == -1) {
-        money_t change = {-1, -1, -1};
+        money change = {-1, -1, -1};
         return change;
     }
 
-    money_t change = {used[amount][0], used[amount][1], used[amount][2]};
+    money change = {used[amount][0], used[amount][1], used[amount][2]};
     return change;
 }
 
-money_t count_minimum_coins(money_t available, int amount) {
-    money_t result = {0, 0, 0};
+money count_minimum_coins(money available, int amount) {
+    money result = {0, 0, 0};
 
     for (int i = 0; i < available.fives; i++) {
         amount -= 5;
@@ -93,8 +93,8 @@ money_t count_minimum_coins(money_t available, int amount) {
     return result;
 }
 
-money_t count_maximum_coins(money_t available, int amount) {
-    money_t result = {0, 0, 0};
+money count_maximum_coins(money available, int amount) {
+    money result = {0, 0, 0};
 
     for (int i = 0; i < available.ones; i++) {
         amount -= 1;
@@ -131,15 +131,15 @@ money_t count_maximum_coins(money_t available, int amount) {
     return result;
 }
 
-int get_amount(money_t money) {
+int get_amount(money money) {
     return money.ones + 2 * money.twos + 5 * money.fives;
 }
 
-bool is_change_correct(money_t change) {
+bool is_change_correct(money change) {
     return change.ones != -1 && change.twos != -1 && change.fives != -1;
 }
 
-bool is_change_incorrect(money_t change) {
+bool is_change_incorrect(money change) {
     log_money("check if incorrect", change);
     return change.ones == -1 || change.twos == -1 || change.fives == -1;
 }

@@ -3,22 +3,22 @@
 
 #include <stdbool.h>
 
-typedef struct {
+typedef struct money {
     int ones;
     int twos;
     int fives;
-} money_t;
+} money;
 
-money_t get_change(money_t available, int amount);
+money get_change(money available, int amount);
 
-money_t count_minimum_coins(money_t available, int amount);
+money count_minimum_coins(money available, int amount);
 
-money_t count_maximum_coins(money_t available, int amount);
+money count_maximum_coins(money available, int amount);
 
-int get_amount(money_t money);
+int get_amount(money money);
 
-bool is_change_correct(money_t change);
+bool is_change_correct(money change);
 
-bool is_change_incorrect(money_t change);
+bool is_change_incorrect(money change);
 
 #endif

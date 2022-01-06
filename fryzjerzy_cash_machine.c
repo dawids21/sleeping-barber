@@ -22,18 +22,18 @@ void notify_hairdressers(cash_machine cash_machine) {
 }
 
 cash_machine init_cash_machine(int num_of_hairdressers) {
-    int money_id = shmget(IPC_PRIVATE, sizeof(money_t), IPC_CREAT | 0600);
+    int money_id = shmget(IPC_PRIVATE, sizeof(money), IPC_CREAT | 0600);
     if (money_id == -1) {
         handle_error();
     }
-    money_t *money = (money_t *)shmat(money_id, NULL, 0);
-    if (money == (void *)-1) {
+    money *cash = (money *)shmat(money_id, NULL, 0);
+    if (cash == (void *)-1) {
         printf("%d", errno);
         handle_error();
     }
-    money->ones = 3;
-    money->twos = 3;
-    money->fives = 3;
+    cash->ones = 3;
+    cash->twos = 3;
+    cash->fives = 3;
 
     int cash_machine_semaphor = semget(IPC_PRIVATE, 1, IPC_CREAT | 0600);
     if (cash_machine_semaphor == -1) {
@@ -51,7 +51,7 @@ cash_machine init_cash_machine(int num_of_hairdressers) {
     }
 
     cash_machine cash_machine;
-    cash_machine.cash = money;
+    cash_machine.cash = cash;
     cash_machine.semaphor = cash_machine_semaphor;
     cash_machine.num_of_hairdressers = num_of_hairdressers;
     cash_machine.hairdressers_semaphores = hairdressers_semaphores;
@@ -59,7 +59,7 @@ cash_machine init_cash_machine(int num_of_hairdressers) {
     return cash_machine;
 }
 
-void add_cash(cash_machine cash_machine, money_t to_add) {
+void add_cash(cash_machine cash_machine, money to_add) {
     log_money("wait for cash machine to add cash", to_add);
     down(cash_machine.semaphor, 0);
     cash_machine.cash->ones += to_add.ones;
@@ -70,8 +70,8 @@ void add_cash(cash_machine cash_machine, money_t to_add) {
     notify_hairdressers(cash_machine);
 }
 
-money_t cash_machine_change(cash_machine cash_machine, int amount, int hairdresser) {
-    money_t change = {-1, -1, -1};
+money cash_machine_change(cash_machine cash_machine, int amount, int hairdresser) {
+    money change = {-1, -1, -1};
     while (is_change_incorrect(change)) {
         log_num("check for change hairdresser:", hairdresser);
         down(cash_machine.hairdressers_semaphores, hairdresser);

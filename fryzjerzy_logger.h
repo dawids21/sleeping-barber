@@ -9,6 +9,6 @@ void log_msg(char *msg);
 
 void log_num(char *msg, int num);
 
-void log_money(char *msg, money_t money);
+void log_money(char *msg, money money);
 
 #endif  // FRYZJERZY_LOGGER_H

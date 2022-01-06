@@ -20,7 +20,7 @@ void log_num(char *msg, int num) {
     }
 }
 
-void log_money(char *msg, money_t money) {
+void log_money(char *msg, money money) {
     if (enabled()) {
         printf("%d %s money: %d %d %d\n", getpid(), msg, money.ones, money.twos, money.fives);
     }

@@ -5,7 +5,7 @@
 
 typedef struct client {
     int id;
-    money_t money;
+    money money;
 } client;
 
 #endif  // FRYZJERZY_CLIENT_H

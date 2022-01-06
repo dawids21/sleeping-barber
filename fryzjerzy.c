@@ -19,7 +19,7 @@
 
 typedef struct {
     long client_id;
-    money_t change;
+    money change;
 } change_msg_t;
 
 #define EMPTY 1
@@ -47,7 +47,7 @@ int main(int argc, char const *argv[]) {
             usleep(rand() % 500000);
             client client = take_client(waiting_room);
             log_num("get client", client.id);
-            money_t to_pay;
+            money to_pay;
             if (rand() % 2 == 0) {
                 to_pay = count_minimum_coins(client.money, COST_PER_CUT);
             } else {
@@ -58,7 +58,7 @@ int main(int argc, char const *argv[]) {
             int to_return = get_amount(to_pay) - COST_PER_CUT;
             usleep(rand() % 500000);
             log_num("finished client", client.id);
-            money_t change = cash_machine_change(cash_machine, to_return, hairdresser_id);
+            money change = cash_machine_change(cash_machine, to_return, hairdresser_id);
             log_num("get change for", client.id);
             change_msg_t change_msg;
             change_msg.client_id = client.id;
@@ -78,7 +78,7 @@ int main(int argc, char const *argv[]) {
         srand(getpid());
         client client;
         client.id = client_id;
-        money_t money = {2, 2, 2};
+        money money = {2, 2, 2};
         client.money = money;
         log_num("start client", getpid());
         for (int i = 0; i < 100; i++) {
