@@ -23,4 +23,6 @@ bool is_change_incorrect(money change);
 
 money subtract(money first, money second);
 
+money add(money first, money second);
+
 #endif

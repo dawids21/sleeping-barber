@@ -151,3 +151,11 @@ money subtract(money first, money second) {
     result.fives = first.fives - second.fives;
     return result;
 }
+
+money add(money first, money second) {
+    money result;
+    result.ones = first.ones + second.ones;
+    result.twos = first.twos + second.twos;
+    result.fives = first.fives + second.fives;
+    return result;
+}
