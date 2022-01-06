@@ -80,7 +80,9 @@ int main(int argc, char const *argv[]) {
                     make_money(client);
                 }
                 log_num("wait for free seat", client.id);
-                wait_for_free_seat(waiting_room);
+                while (!wait_for_free_seat(waiting_room)) {
+                    make_money(client);
+                }
                 log_num("get free seat", client.id);
                 take_seat(waiting_room, client);
                 log_num("take seat", client.id);
