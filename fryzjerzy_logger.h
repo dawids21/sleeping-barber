@@ -3,12 +3,18 @@
 
 #include "fryzjerzy_money.h"
 
-#define IS_LOGGER_ENABLED 1
+#define LOG_LEVEL 1
 
-void log_msg(char *msg);
+void d_log(char *msg);
 
-void log_num(char *msg, int num);
+void d_log_num(char *msg, int num);
 
-void log_money(char *msg, money money);
+void d_log_money(char *msg, money money);
+
+void i_log(char *msg);
+
+void i_log_num(char *msg, int num);
+
+void i_log_money(char *msg, money money);
 
 #endif  // FRYZJERZY_LOGGER_H

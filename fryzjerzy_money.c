@@ -140,7 +140,7 @@ bool is_change_correct(money change) {
 }
 
 bool is_change_incorrect(money change) {
-    log_money("check if incorrect", change);
+    d_log_money("check if incorrect", change);
     return change.ones == -1 || change.twos == -1 || change.fives == -1;
 }
 

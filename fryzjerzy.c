@@ -31,15 +31,15 @@ int main(int argc, char const *argv[]) {
     int change_queue = new_change_queue();
 
     // HAIRDRESSER
-    log_num("start main", getpid());
+    d_log_num("start main", getpid());
     for (int hairdresser_id = 0; hairdresser_id < NUM_OF_HAIRDRESSERS; hairdresser_id++) {
         if (fork() == 0) {
             srand(getpid());
-            log_num("start hairdresser", getpid());
+            d_log_num("start hairdresser", getpid());
             for (int i = 0; i < 100; i++) {
                 usleep(rand() % 500000);
                 client client = take_client(waiting_room);
-                log_num("get client", client.id);
+                d_log_num("get client", client.id);
                 money to_pay;
                 if (rand() % 2 == 0) {
                     to_pay = count_minimum_coins(client.money, COST_PER_CUT);
@@ -47,14 +47,14 @@ int main(int argc, char const *argv[]) {
                     to_pay = count_maximum_coins(client.money, COST_PER_CUT);
                 }
                 add_cash(cash_machine, to_pay);
-                log_num("get money in machine for", client.id);
+                d_log_num("get money in machine for", client.id);
                 int to_return = get_amount(to_pay) - COST_PER_CUT;
                 usleep(rand() % 500000);
-                log_num("finished client", client.id);
+                d_log_num("finished client", client.id);
                 money change = cash_machine_change(cash_machine, to_return, hairdresser_id);
-                log_num("get change for", client.id);
+                d_log_num("get change for", client.id);
                 money to_send = subtract(change, to_pay);
-                log_money("send change", to_send);
+                d_log_money("send change", to_send);
                 change_msg_t change_msg;
                 change_msg.client_id = client.id;
                 change_msg.change = to_send;
@@ -62,8 +62,8 @@ int main(int argc, char const *argv[]) {
                     perror("Send client change");
                     exit(1);
                 }
-                log_num("add change to queue for client", client.id);
-                log_msg("hairdresser finished");
+                d_log_num("add change to queue for client", client.id);
+                d_log("hairdresser finished");
             }
             exit(0);
         }
@@ -74,29 +74,29 @@ int main(int argc, char const *argv[]) {
         if (fork() == 0) {
             srand(getpid());
             client client = new_client(client_id, change_queue);
-            log_num("start client", getpid());
+            d_log_num("start client", getpid());
             for (int i = 0; i < 100; i++) {
                 while (get_amount(client.money) < COST_PER_CUT) {
                     make_money(client);
                 }
-                log_num("wait for free seat", client.id);
+                d_log_num("wait for free seat", client.id);
                 while (!wait_for_free_seat(waiting_room)) {
                     make_money(client);
                 }
-                log_num("get free seat", client.id);
+                d_log_num("get free seat", client.id);
                 take_seat(waiting_room, client);
-                log_num("take seat", client.id);
-                log_num("wait for change", client.id);
+                d_log_num("take seat", client.id);
+                d_log_num("wait for change", client.id);
                 change_msg_t change_msg;
                 if (msgrcv(change_queue, &change_msg, sizeof(change_msg.change), client_id, 0) == -1) {
                     perror("Get change for client");
                     exit(1);
                 }
-                log_num("get change", client.id);
+                d_log_num("get change", client.id);
                 client.money.ones += change_msg.change.ones;
                 client.money.twos += change_msg.change.twos;
                 client.money.fives += change_msg.change.fives;
-                log_msg("client finished");
+                d_log("client finished");
             }
             exit(0);
         }

@@ -37,7 +37,7 @@ waiting_room init_waiting_room(int size) {
 
     waiting_room waiting_room;
     waiting_room.seats = seats;
-    log_msg("create waiting room");
+    d_log("create waiting room");
     return waiting_room;
 }
 
@@ -47,20 +47,20 @@ client take_client(waiting_room waiting_room) {
         perror("Take client from waiting room");
         exit(1);
     }
-    log_msg("took client");
+    d_log("took client");
     waiting_room_seat empty = empty_seat();
     if (msgsnd(waiting_room.seats, &empty, sizeof(empty.client), 0) == -1) {
         perror("Free seat in waiting room");
         exit(1);
     }
-    log_msg("free seat");
+    d_log("free seat");
 
     return seat.client;
 }
 
 bool wait_for_free_seat(waiting_room waiting_room) {
     waiting_room_seat seat;
-    log_msg("wait for free seat");
+    d_log("wait for free seat");
     if (msgrcv(waiting_room.seats, &seat, sizeof(seat.client), EMPTY_SEAT, IPC_NOWAIT) == -1) {
         if (errno == ENOMSG) {
             return false;
@@ -68,7 +68,7 @@ bool wait_for_free_seat(waiting_room waiting_room) {
         perror("Wait for free seat in waiting room");
         exit(1);
     }
-    log_msg("get free seat");
+    d_log("get free seat");
     return true;
 }
 
@@ -80,5 +80,5 @@ void take_seat(waiting_room waiting_room, client client) {
         perror("Take seat in waiting room");
         exit(1);
     }
-    log_num("took free seat", client.id);
+    d_log_num("took free seat", client.id);
 }
