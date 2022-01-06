@@ -17,11 +17,6 @@
 #define NUM_OF_CLIENTS 1
 #define COST_PER_CUT 10
 
-typedef struct {
-    long client_id;
-    money change;
-} change_msg_t;
-
 #define EMPTY 1
 #define FULL 2
 
@@ -55,13 +50,7 @@ int main(int argc, char const *argv[]) {
                 d_log_num("get change for", client.id);
                 money to_send = subtract(change, to_pay);
                 d_log_money("send change", to_send);
-                change_msg_t change_msg;
-                change_msg.client_id = client.id;
-                change_msg.change = to_send;
-                if (msgsnd(client.change_queue, &change_msg, sizeof(change_msg.change), 0) == -1) {
-                    perror("Send client change");
-                    exit(1);
-                }
+                send_change(client, to_send);
                 d_log_num("add change to queue for client", client.id);
                 d_log("hairdresser finished");
             }
@@ -87,15 +76,8 @@ int main(int argc, char const *argv[]) {
                 take_seat(waiting_room, client);
                 d_log_num("take seat", client.id);
                 d_log_num("wait for change", client.id);
-                change_msg_t change_msg;
-                if (msgrcv(change_queue, &change_msg, sizeof(change_msg.change), client_id, 0) == -1) {
-                    perror("Get change for client");
-                    exit(1);
-                }
+                wait_for_change(client);
                 d_log_num("get change", client.id);
-                client.money.ones += change_msg.change.ones;
-                client.money.twos += change_msg.change.twos;
-                client.money.fives += change_msg.change.fives;
                 d_log("client finished");
             }
             exit(0);
