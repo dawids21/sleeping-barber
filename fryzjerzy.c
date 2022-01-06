@@ -10,20 +10,18 @@
 #include <unistd.h>
 
 #include "fryzjerzy_cash_machine.h"
+#include "fryzjerzy_client.h"
 #include "fryzjerzy_money.h"
 #include "fryzjerzy_semaphores_helpers.h"
 
 #define SIZE_OF_WAITING_ROOM 2
+#define NUM_OF_HAIRDRESSERS 1
 #define NUM_OF_CLIENTS 1
-
-typedef struct {
-    int id;
-    money_t money;
-} client_t;
+#define COST_PER_CUT 10
 
 typedef struct {
     long mtype;
-    client_t client;
+    client client;
 } waiting_room_element_t;
 
 typedef struct {
@@ -33,22 +31,6 @@ typedef struct {
 
 #define EMPTY 1
 #define FULL 2
-
-void up(int semid, int semnum) {
-    struct sembuf buf = {semnum, 1, 0};
-    if (semop(semid, &buf, 1) == -1) {
-        perror("Podniesienie semafora");
-        exit(1);
-    }
-}
-
-void down(int semid, int semnum) {
-    struct sembuf buf = {semnum, -1, 0};
-    if (semop(semid, &buf, 1) == -1) {
-        perror("Opuszczenie semafora");
-        exit(1);
-    }
-}
 
 int main(int argc, char const *argv[]) {
     // create waiting room
@@ -78,18 +60,11 @@ int main(int argc, char const *argv[]) {
 
     cash_machine cash_machine = init();
 
-    // create semaphor for cash_machine
-    int cash_machine_semaphor = semget(IPC_PRIVATE, 1, IPC_CREAT | 0600);
-    if (cash_machine_semaphor == -1) {
-        perror("Creating semaphor for cash machine");
         exit(1);
     }
-    if (semctl(cash_machine_semaphor, 0, SETVAL, 1) == -1) {
-        perror("Set value for clients semaphores");
-        exit(1);
     }
 
-    // create queue for changes
+    // create queue for client changes
     int change_queue = msgget(IPC_PRIVATE, IPC_CREAT | 0600);
     if (change_queue == -1) {
         perror("Create waiting room");
@@ -124,17 +99,17 @@ int main(int argc, char const *argv[]) {
         for (int i = 0; i < 100; i++) {
             usleep(rand() % 500000);
             waiting_room_element_t element;
-            if (msgrcv(waiting_room, &element, sizeof(client_t), EMPTY, 0) == -1) {
+            if (msgrcv(waiting_room, &element, sizeof(client), EMPTY, 0) == -1) {
                 perror("Wait for free seat in waiting room");
                 exit(1);
             }
             element.mtype = FULL;
-            client_t client;
+            client client;
             client.id = 0;
             money_t money = {2, 2, 2};
             client.money = money;
             element.client = client;
-            if (msgsnd(waiting_room, &element, sizeof(client_t), 0) == -1) {
+            if (msgsnd(waiting_room, &element, sizeof(client), 0) == -1) {
                 perror("Add new client waiting room");
                 exit(1);
             }

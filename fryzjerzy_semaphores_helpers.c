@@ -1,6 +1,6 @@
 #include "fryzjerzy_semaphores_helpers.h"
 
-#include "sys/sem.h"
+#include <sys/sem.h>
 
 void up(int semid, int semnum) {
     struct sembuf buf = {semnum, 1, 0};
