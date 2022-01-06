@@ -1,5 +1,6 @@
 #include "fryzjerzy_cash_machine.h"
 
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/sem.h>
@@ -19,12 +20,13 @@ void notify_hairdressers(cash_machine cash_machine) {
 }
 
 cash_machine init_cash_machine(int num_of_hairdressers) {
-    int money_id = shmget(IPC_PRIVATE, sizeof(money_t), 0);
+    int money_id = shmget(IPC_PRIVATE, sizeof(money_t), IPC_CREAT | 0600);
     if (money_id == -1) {
         handle_error();
     }
     money_t *money = (money_t *)shmat(money_id, NULL, 0);
-    if (money == NULL) {
+    if (money == (void *)-1) {
+        printf("%d", errno);
         handle_error();
     }
     money->ones = 3;
