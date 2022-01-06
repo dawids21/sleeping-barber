@@ -7,6 +7,7 @@
 
 #include "fryzjerzy_cash_machine.h"
 #include "fryzjerzy_client.h"
+#include "fryzjerzy_logger.h"
 #include "fryzjerzy_money.h"
 #include "fryzjerzy_semaphores_helpers.h"
 #include "fryzjerzy_waiting_room.h"
@@ -37,13 +38,15 @@ int main(int argc, char const *argv[]) {
 
     // HAIRDRESSER
     int hairdresser_id = 0;
-    int client_id = 0;
+    int client_id = 1;
+    log_num("start main", getpid());
     if (fork() == 0) {
         srand(getpid());
+        log_num("start hairdresser", getpid());
         for (int i = 0; i < 100; i++) {
             usleep(rand() % 500000);
             client client = take_client(waiting_room);
-            printf("%d Odebrano klienta: %d\n", i, client.money);
+            log_num("get client", client.id);
             money_t to_pay;
             if (rand() % 2 == 0) {
                 to_pay = count_minimum_coins(client.money, COST_PER_CUT);
@@ -51,9 +54,12 @@ int main(int argc, char const *argv[]) {
                 to_pay = count_maximum_coins(client.money, COST_PER_CUT);
             }
             add_cash(cash_machine, to_pay);
+            log_num("get money in machine for", client.id);
             int to_return = get_amount(to_pay) - COST_PER_CUT;
             usleep(rand() % 500000);
+            log_num("finished client", client.id);
             money_t change = cash_machine_change(cash_machine, to_return, hairdresser_id);
+            log_num("get change for", client.id);
             change_msg_t change_msg;
             change_msg.client_id = client.id;
             change_msg.change = change;
@@ -61,6 +67,8 @@ int main(int argc, char const *argv[]) {
                 perror("Send client change");
                 exit(1);
             }
+            log_num("add change to queue for client", client.id);
+            log_msg("hairdresser finished");
         }
         exit(0);
     }
@@ -72,19 +80,25 @@ int main(int argc, char const *argv[]) {
         client.id = client_id;
         money_t money = {2, 2, 2};
         client.money = money;
+        log_num("start client", getpid());
         for (int i = 0; i < 100; i++) {
             usleep(rand() % 500000);
+            log_num("wait for free seat", client.id);
             wait_for_free_seat(waiting_room);
+            log_num("get free seat", client.id);
             take_seat(waiting_room, client);
+            log_num("take seat", client.id);
+            log_num("wait for change", client.id);
             change_msg_t change_msg;
             if (msgrcv(change_queue, &change_msg, sizeof(change_msg.change), client_id, 0) == -1) {
                 perror("Get change for client");
                 exit(1);
             }
+            log_num("get change", client.id);
             client.money.ones += change_msg.change.ones;
             client.money.twos += change_msg.change.twos;
             client.money.fives += change_msg.change.fives;
-            printf("Client finished\n");
+            log_msg("client finished");
         }
         exit(0);
     }

@@ -2,6 +2,8 @@
 
 #include <string.h>
 
+#include "fryzjerzy_logger.h"
+
 money_t get_change(money_t available, int amount) {
     int available_coins[3] = {available.ones, available.twos, available.fives};
     int values[3] = {1, 2, 5};
@@ -131,4 +133,13 @@ money_t count_maximum_coins(money_t available, int amount) {
 
 int get_amount(money_t money) {
     return money.ones + 2 * money.twos + 5 * money.fives;
+}
+
+bool is_change_correct(money_t change) {
+    return change.ones != -1 && change.twos != -1 && change.fives != -1;
+}
+
+bool is_change_incorrect(money_t change) {
+    log_money("check if incorrect", change);
+    return change.ones == -1 || change.twos == -1 || change.fives == -1;
 }

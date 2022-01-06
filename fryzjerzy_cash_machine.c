@@ -6,6 +6,7 @@
 #include <sys/sem.h>
 #include <sys/shm.h>
 
+#include "fryzjerzy_logger.h"
 #include "fryzjerzy_semaphores_helpers.h"
 
 void handle_error() {
@@ -14,6 +15,7 @@ void handle_error() {
 }
 
 void notify_hairdressers(cash_machine cash_machine) {
+    log_msg("notify hairdressers");
     for (int i = 0; i < cash_machine.num_of_hairdressers; i++) {
         set_up(cash_machine.hairdressers_semaphores, i);
     }
@@ -53,25 +55,32 @@ cash_machine init_cash_machine(int num_of_hairdressers) {
     cash_machine.semaphor = cash_machine_semaphor;
     cash_machine.num_of_hairdressers = num_of_hairdressers;
     cash_machine.hairdressers_semaphores = hairdressers_semaphores;
+    log_msg("create cash machine");
     return cash_machine;
 }
 
 void add_cash(cash_machine cash_machine, money_t to_add) {
+    log_money("wait for cash machine to add cash", to_add);
     down(cash_machine.semaphor, 0);
     cash_machine.cash->ones += to_add.ones;
     cash_machine.cash->twos += to_add.twos;
     cash_machine.cash->fives += to_add.fives;
+    log_msg("add cash to machine");
     up(cash_machine.semaphor, 0);
     notify_hairdressers(cash_machine);
 }
 
 money_t cash_machine_change(cash_machine cash_machine, int amount, int hairdresser) {
     money_t change = {-1, -1, -1};
-    while (change.ones == -1 || change.twos == -1 || change.fives == -1) {
+    while (is_change_incorrect(change)) {
+        log_num("check for change hairdresser:", hairdresser);
         down(cash_machine.hairdressers_semaphores, hairdresser);
+        log_num("try to change hairdresser:", hairdresser);
         down(cash_machine.semaphor, 0);
-        money_t change = get_change(*cash_machine.cash, amount);
-        if (change.ones == -1 && change.twos == -1 && change.fives == -1) {
+        change = get_change(*cash_machine.cash, amount);
+        log_money("got change", change);
+        if (is_change_correct(change)) {
+            log_msg("got correct change");
             cash_machine.cash->ones -= change.ones;
             cash_machine.cash->twos -= change.twos;
             cash_machine.cash->fives -= change.fives;

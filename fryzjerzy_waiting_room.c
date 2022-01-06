@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <sys/msg.h>
 
+#include "fryzjerzy_logger.h"
+
 #define EMPTY_SEAT 1
 #define FULL_SEAT 2
 
@@ -34,6 +36,7 @@ waiting_room init_waiting_room(int size) {
 
     waiting_room waiting_room;
     waiting_room.seats = seats;
+    log_msg("create waiting room");
     return waiting_room;
 }
 
@@ -43,21 +46,25 @@ client take_client(waiting_room waiting_room) {
         perror("Take client from waiting room");
         exit(1);
     }
+    log_msg("took client");
     waiting_room_seat empty = empty_seat();
     if (msgsnd(waiting_room.seats, &empty, sizeof(empty.client), 0) == -1) {
         perror("Free seat in waiting room");
         exit(1);
     }
+    log_msg("free seat");
 
     return seat.client;
 }
 
 void wait_for_free_seat(waiting_room waiting_room) {
     waiting_room_seat seat;
+    log_msg("wait for free seat");
     if (msgrcv(waiting_room.seats, &seat, sizeof(seat.client), EMPTY_SEAT, 0) == -1) {
         perror("Wait for free seat in waiting room");
         exit(1);
     }
+    log_msg("get free seat");
 }
 
 void take_seat(waiting_room waiting_room, client client) {
@@ -68,4 +75,5 @@ void take_seat(waiting_room waiting_room, client client) {
         perror("Take seat in waiting room");
         exit(1);
     }
+    log_num("took free seat", client.id);
 }
