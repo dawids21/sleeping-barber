@@ -60,9 +60,11 @@ int main(int argc, char const *argv[]) {
             log_num("finished client", client.id);
             money change = cash_machine_change(cash_machine, to_return, hairdresser_id);
             log_num("get change for", client.id);
+            money to_send = subtract(change, to_pay);
+            log_money("send change", to_send);
             change_msg_t change_msg;
             change_msg.client_id = client.id;
-            change_msg.change = change;
+            change_msg.change = to_send;
             if (msgsnd(change_queue, &change_msg, sizeof(change_msg.change), 0) == -1) {
                 perror("Send client change");
                 exit(1);
