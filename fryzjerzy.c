@@ -13,11 +13,11 @@
 #include "fryzjerzy_semaphores_helpers.h"
 #include "fryzjerzy_waiting_room.h"
 
-#define SIZE_OF_WAITING_ROOM 2
+#define SIZE_OF_WAITING_ROOM 1
 #define NUM_OF_HAIRDRESSERS 1
-#define NUM_OF_CLIENTS 1
+#define NUM_OF_CLIENTS 3
 #define NUM_OF_CHAIRS 1
-#define COST_PER_CUT 10
+#define COST_PER_CUT 30
 
 #define EMPTY 1
 #define FULL 2

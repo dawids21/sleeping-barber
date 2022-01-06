@@ -47,3 +47,9 @@ void i_log_money(char *msg, money money) {
         printf("%d %s money: %d %d %d\n", getpid(), msg, money.ones, money.twos, money.fives);
     }
 }
+
+void i_log_num_money(char *msg, int num, money money) {
+    if (info()) {
+        printf("%d %s %d money: %d %d %d\n", getpid(), msg, num, money.ones, money.twos, money.fives);
+    }
+}

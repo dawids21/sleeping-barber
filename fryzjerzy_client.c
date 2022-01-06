@@ -5,6 +5,8 @@
 #include <sys/msg.h>
 #include <unistd.h>
 
+#include "fryzjerzy_logger.h"
+
 typedef struct change_msg {
     long client_id;
     money change;
@@ -31,9 +33,10 @@ void make_money(client client) {
     usleep(rand() % 500000);
     money earned;
     int random = rand();
-    earned.ones = random % 6;
-    earned.twos = random % 4;
-    earned.fives = random % 2;
+    earned.ones = 1;
+    earned.twos = 1;
+    earned.fives = rand() % 2;
+    i_log_num_money("Money earned by client", client.id, earned);
     client.money = add(client.money, earned);
 }
 
