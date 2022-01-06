@@ -12,7 +12,13 @@ void handle_error() {
     exit(1);
 }
 
-cash_machine init() {
+void notify_hairdressers(cash_machine cash_machine) {
+    for (int i = 0; i < cash_machine.num_of_hairdressers; i++) {
+        set_up(cash_machine.hairdressers_semaphores, i);
+    }
+}
+
+cash_machine init_cash_machine(int num_of_hairdressers) {
     int money_id = shmget(IPC_PRIVATE, sizeof(money_t), 0);
     if (money_id == -1) {
         handle_error();
@@ -32,9 +38,19 @@ cash_machine init() {
 
     set_up(cash_machine_semaphor, 0);
 
+    int hairdressers_semaphores = semget(IPC_PRIVATE, num_of_hairdressers, IPC_CREAT | 0600);
+    if (hairdressers_semaphores == -1) {
+        handle_error();
+    }
+    for (int i = 0; i < num_of_hairdressers; i++) {
+        set_up(hairdressers_semaphores, i);
+    }
+
     cash_machine cash_machine;
     cash_machine.cash = money;
     cash_machine.semaphor = cash_machine_semaphor;
+    cash_machine.num_of_hairdressers = num_of_hairdressers;
+    cash_machine.hairdressers_semaphores = hairdressers_semaphores;
     return cash_machine;
 }
 
@@ -44,18 +60,22 @@ void add_cash(cash_machine cash_machine, money_t to_add) {
     cash_machine.cash->twos += to_add.twos;
     cash_machine.cash->fives += to_add.fives;
     up(cash_machine.semaphor, 0);
+    notify_hairdressers(cash_machine);
 }
 
-money_t change(cash_machine cash_machine, int amount) {
-    down(cash_machine.semaphor, 0);
-    money_t change = get_change(*cash_machine.cash, amount);
-    if (change.ones == -1 && change.twos == -1 && change.fives == -1) {
+money_t cash_machine_change(cash_machine cash_machine, int amount, int hairdresser) {
+    money_t change = {-1, -1, -1};
+    while (change.ones == -1 || change.twos == -1 || change.fives == -1) {
+        down(cash_machine.hairdressers_semaphores, hairdresser);
+        down(cash_machine.semaphor, 0);
+        money_t change = get_change(*cash_machine.cash, amount);
+        if (change.ones == -1 && change.twos == -1 && change.fives == -1) {
+            cash_machine.cash->ones -= change.ones;
+            cash_machine.cash->twos -= change.twos;
+            cash_machine.cash->fives -= change.fives;
+        }
         up(cash_machine.semaphor, 0);
-        return change;
     }
-    cash_machine.cash->ones -= change.ones;
-    cash_machine.cash->twos -= change.twos;
-    cash_machine.cash->fives -= change.fives;
-    up(cash_machine.semaphor, 0);
+    notify_hairdressers(cash_machine);
     return change;
 }

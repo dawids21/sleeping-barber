@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -30,6 +31,8 @@ typedef struct {
 
 int main(int argc, char const *argv[]) {
     waiting_room waiting_room = init_waiting_room(SIZE_OF_WAITING_ROOM);
+    cash_machine cash_machine = init_cash_machine(NUM_OF_HAIRDRESSERS);
+
     // create semaphor for each client
     int client_done = semget(IPC_PRIVATE, NUM_OF_CLIENTS, IPC_CREAT | 0600);
     if (client_done == -1) {
@@ -40,18 +43,6 @@ int main(int argc, char const *argv[]) {
         set_down(client_done, i);
     }
 
-    cash_machine cash_machine = init();
-
-    // create semaphores for hairdressers to check cash machine
-    int hairdresser_check_cash_machine = semget(IPC_PRIVATE, NUM_OF_HAIRDRESSERS, IPC_CREAT | 0600);
-    if (hairdresser_check_cash_machine == -1) {
-        perror("Create waiting room");
-        exit(1);
-    }
-    for (int i = 0; i < NUM_OF_HAIRDRESSERS; i++) {
-        set_up(hairdresser_check_cash_machine, i);
-    }
-
     // create queue for client changes
     int change_queue = msgget(IPC_PRIVATE, IPC_CREAT | 0600);
     if (change_queue == -1) {
@@ -60,6 +51,8 @@ int main(int argc, char const *argv[]) {
     }
 
     // HAIRDRESSER
+    int hairdresser_id = 0;
+    int client_id = 0;
     if (fork() == 0) {
         srand(getpid());
         for (int i = 0; i < 100; i++) {
@@ -73,10 +66,9 @@ int main(int argc, char const *argv[]) {
                 to_pay = count_maximum_coins(client.money, COST_PER_CUT);
             }
             add_cash(cash_machine, to_pay);
-            for (int i = 0; i < NUM_OF_HAIRDRESSERS; i++) {
-                set_up(hairdresser_check_cash_machine, i);
-            }
+            int to_return = get_amount(to_pay) - COST_PER_CUT;
             usleep(rand() % 500000);
+            cash_machine_change(cash_machine, to_return, hairdresser_id);
             up(client_done, client.id);
         }
         exit(0);
@@ -89,7 +81,7 @@ int main(int argc, char const *argv[]) {
             usleep(rand() % 500000);
             wait_for_free_seat(waiting_room);
             client client;
-            client.id = 0;
+            client.id = client_id;
             money_t money = {2, 2, 2};
             client.money = money;
             take_seat(waiting_room, client);
