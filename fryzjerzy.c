@@ -59,7 +59,7 @@ int main(int argc, char const *argv[]) {
             change_msg_t change_msg;
             change_msg.client_id = client.id;
             change_msg.change = to_send;
-            if (msgsnd(change_queue, &change_msg, sizeof(change_msg.change), 0) == -1) {
+            if (msgsnd(client.change_queue, &change_msg, sizeof(change_msg.change), 0) == -1) {
                 perror("Send client change");
                 exit(1);
             }
@@ -75,7 +75,9 @@ int main(int argc, char const *argv[]) {
         client client = new_client(client_id, change_queue);
         log_num("start client", getpid());
         for (int i = 0; i < 100; i++) {
-            usleep(rand() % 500000);
+            while (get_amount(client.money) < COST_PER_CUT) {
+                make_money(client);
+            }
             log_num("wait for free seat", client.id);
             wait_for_free_seat(waiting_room);
             log_num("get free seat", client.id);

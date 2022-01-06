@@ -13,4 +13,6 @@ int new_change_queue();
 
 client new_client(int id, int change_queue);
 
+void make_money(client client);
+
 #endif  // FRYZJERZY_CLIENT_H
