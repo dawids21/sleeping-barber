@@ -9,6 +9,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+#include "fryzjerzy_cash_machine.h"
 #include "fryzjerzy_money.h"
 #include "fryzjerzy_semaphores_helpers.h"
 
@@ -75,20 +76,7 @@ int main(int argc, char const *argv[]) {
         set_down(client_done, i);
     }
 
-    // create cash machine
-    int cash_machine_id = shmget(IPC_PRIVATE, sizeof(money_t), 0);
-    if (cash_machine_id == -1) {
-        perror("Creating cash machine");
-        exit(1);
-    }
-    money_t *cash_machine = (money_t *)shmat(cash_machine_id, NULL, 0);
-    if (cash_machine == NULL) {
-        perror("Attaching cash machine");
-        exit(1);
-    }
-    cash_machine->ones = 3;
-    cash_machine->twos = 3;
-    cash_machine->fives = 3;
+    cash_machine cash_machine = init();
 
     // create semaphor for cash_machine
     int cash_machine_semaphor = semget(IPC_PRIVATE, 1, IPC_CREAT | 0600);
