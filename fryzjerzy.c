@@ -13,16 +13,12 @@
 #include "fryzjerzy_client.h"
 #include "fryzjerzy_money.h"
 #include "fryzjerzy_semaphores_helpers.h"
+#include "fryzjerzy_waiting_room.h"
 
 #define SIZE_OF_WAITING_ROOM 2
 #define NUM_OF_HAIRDRESSERS 1
 #define NUM_OF_CLIENTS 1
 #define COST_PER_CUT 10
-
-typedef struct {
-    long mtype;
-    client client;
-} waiting_room_element_t;
 
 typedef struct {
     long client_id;
@@ -33,21 +29,7 @@ typedef struct {
 #define FULL 2
 
 int main(int argc, char const *argv[]) {
-    // create waiting room
-    int waiting_room = msgget(IPC_PRIVATE, IPC_CREAT | 0600);
-    if (waiting_room == -1) {
-        perror("Create waiting room");
-        exit(1);
-    }
-    for (int i = 0; i < SIZE_OF_WAITING_ROOM; i++) {
-        waiting_room_element_t element;
-        element.mtype = EMPTY;
-        if (msgsnd(waiting_room, &element, sizeof(element.client), 0) == -1) {
-            perror("Initialize waiting room");
-            exit(1);
-        }
-    }
-
+    waiting_room waiting_room = init_waiting_room(SIZE_OF_WAITING_ROOM);
     // create semaphor for each client
     int client_done = semget(IPC_PRIVATE, NUM_OF_CLIENTS, IPC_CREAT | 0600);
     if (client_done == -1) {
@@ -82,18 +64,8 @@ int main(int argc, char const *argv[]) {
         srand(getpid());
         for (int i = 0; i < 100; i++) {
             usleep(rand() % 500000);
-            waiting_room_element_t element;
-            if (msgrcv(waiting_room, &element, sizeof(client), FULL, 0) == -1) {
-                perror("Take element from waiting room");
-                exit(1);
-            }
-            client client = element.client;
-            printf("%d Odebrano klienta: %d\n", i, element.client.money);
-            element.mtype = EMPTY;
-            if (msgsnd(waiting_room, &element, sizeof(client), 0) == -1) {
-                perror("Free seat in waiting room");
-                exit(1);
-            }
+            client client = take_client(waiting_room);
+            printf("%d Odebrano klienta: %d\n", i, client.money);
             money_t to_pay;
             if (rand() % 2 == 0) {
                 to_pay = count_minimum_coins(client.money, COST_PER_CUT);
@@ -105,7 +77,7 @@ int main(int argc, char const *argv[]) {
                 set_up(hairdresser_check_cash_machine, i);
             }
             usleep(rand() % 500000);
-            up(client_done, element.client.id);
+            up(client_done, client.id);
         }
         exit(0);
     }
@@ -115,21 +87,12 @@ int main(int argc, char const *argv[]) {
         srand(getpid());
         for (int i = 0; i < 100; i++) {
             usleep(rand() % 500000);
-            waiting_room_element_t element;
-            if (msgrcv(waiting_room, &element, sizeof(client), EMPTY, 0) == -1) {
-                perror("Wait for free seat in waiting room");
-                exit(1);
-            }
-            element.mtype = FULL;
+            wait_for_free_seat(waiting_room);
             client client;
             client.id = 0;
             money_t money = {2, 2, 2};
             client.money = money;
-            element.client = client;
-            if (msgsnd(waiting_room, &element, sizeof(client), 0) == -1) {
-                perror("Add new client waiting room");
-                exit(1);
-            }
+            take_seat(waiting_room, client);
             down(client_done, client.id);
             printf("Client finished\n");
         }
