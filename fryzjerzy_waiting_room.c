@@ -1,5 +1,6 @@
 #include "fryzjerzy_waiting_room.h"
 
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/msg.h>
@@ -57,14 +58,18 @@ client take_client(waiting_room waiting_room) {
     return seat.client;
 }
 
-void wait_for_free_seat(waiting_room waiting_room) {
+bool wait_for_free_seat(waiting_room waiting_room) {
     waiting_room_seat seat;
     log_msg("wait for free seat");
-    if (msgrcv(waiting_room.seats, &seat, sizeof(seat.client), EMPTY_SEAT, 0) == -1) {
+    if (msgrcv(waiting_room.seats, &seat, sizeof(seat.client), EMPTY_SEAT, IPC_NOWAIT) == -1) {
+        if (errno == ENOMSG) {
+            return false;
+        }
         perror("Wait for free seat in waiting room");
         exit(1);
     }
     log_msg("get free seat");
+    return true;
 }
 
 void take_seat(waiting_room waiting_room, client client) {
