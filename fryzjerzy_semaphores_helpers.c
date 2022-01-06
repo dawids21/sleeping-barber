@@ -1,5 +1,7 @@
 #include "fryzjerzy_semaphores_helpers.h"
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <sys/sem.h>
 
 void up(int semid, int semnum) {

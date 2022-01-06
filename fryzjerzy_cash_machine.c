@@ -1,5 +1,6 @@
 #include "fryzjerzy_cash_machine.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <sys/sem.h>
 #include <sys/shm.h>

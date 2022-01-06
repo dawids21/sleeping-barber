@@ -1,5 +1,7 @@
 #include "fryzjerzy_waiting_room.h"
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <sys/msg.h>
 
 #define EMPTY_SEAT 1

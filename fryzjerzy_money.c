@@ -45,6 +45,11 @@ money_t get_change(money_t available, int amount) {
         used[i][coin]++;
     }
 
+    if (min_num_of_coins[amount] == -1) {
+        money_t change = {-1, -1, -1};
+        return change;
+    }
+
     money_t change = {used[amount][0], used[amount][1], used[amount][2]};
     return change;
 }
