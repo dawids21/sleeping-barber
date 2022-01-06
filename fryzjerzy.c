@@ -10,6 +10,7 @@
 #include <unistd.h>
 
 #include "fryzjerzy_money.h"
+#include "fryzjerzy_semaphores_helpers.h"
 
 #define SIZE_OF_WAITING_ROOM 2
 #define NUM_OF_CLIENTS 1
@@ -71,10 +72,7 @@ int main(int argc, char const *argv[]) {
         exit(1);
     }
     for (int i = 0; i < NUM_OF_CLIENTS; i++) {
-        if (semctl(client_done, i, SETVAL, 0) == -1) {
-            perror("Set value for clients semaphores");
-            exit(1);
-        }
+        set_down(client_done, i);
     }
 
     // create cash machine
