@@ -143,3 +143,11 @@ bool is_change_incorrect(money change) {
     log_money("check if incorrect", change);
     return change.ones == -1 || change.twos == -1 || change.fives == -1;
 }
+
+money subtract(money first, money second) {
+    money result;
+    result.ones = first.ones - second.ones;
+    result.twos = first.twos - second.twos;
+    result.fives = first.fives - second.fives;
+    return result;
+}
