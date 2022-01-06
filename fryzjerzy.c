@@ -60,8 +60,14 @@ int main(int argc, char const *argv[]) {
 
     cash_machine cash_machine = init();
 
+    // create semaphores for hairdressers to check cash machine
+    int hairdresser_check_cash_machine = semget(IPC_PRIVATE, NUM_OF_HAIRDRESSERS, IPC_CREAT | 0600);
+    if (hairdresser_check_cash_machine == -1) {
+        perror("Create waiting room");
         exit(1);
     }
+    for (int i = 0; i < NUM_OF_HAIRDRESSERS; i++) {
+        set_up(hairdresser_check_cash_machine, i);
     }
 
     // create queue for client changes
@@ -77,15 +83,26 @@ int main(int argc, char const *argv[]) {
         for (int i = 0; i < 100; i++) {
             usleep(rand() % 500000);
             waiting_room_element_t element;
-            if (msgrcv(waiting_room, &element, sizeof(client_t), FULL, 0) == -1) {
+            if (msgrcv(waiting_room, &element, sizeof(client), FULL, 0) == -1) {
                 perror("Take element from waiting room");
                 exit(1);
             }
+            client client = element.client;
             printf("%d Odebrano klienta: %d\n", i, element.client.money);
             element.mtype = EMPTY;
-            if (msgsnd(waiting_room, &element, sizeof(client_t), 0) == -1) {
+            if (msgsnd(waiting_room, &element, sizeof(client), 0) == -1) {
                 perror("Free seat in waiting room");
                 exit(1);
+            }
+            money_t to_pay;
+            if (rand() % 2 == 0) {
+                to_pay = count_minimum_coins(client.money, COST_PER_CUT);
+            } else {
+                to_pay = count_maximum_coins(client.money, COST_PER_CUT);
+            }
+            add_cash(cash_machine, to_pay);
+            for (int i = 0; i < NUM_OF_HAIRDRESSERS; i++) {
+                set_up(hairdresser_check_cash_machine, i);
             }
             usleep(rand() % 500000);
             up(client_done, element.client.id);
