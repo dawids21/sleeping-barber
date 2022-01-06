@@ -28,13 +28,7 @@ typedef struct {
 int main(int argc, char const *argv[]) {
     waiting_room waiting_room = init_waiting_room(SIZE_OF_WAITING_ROOM);
     cash_machine cash_machine = init_cash_machine(NUM_OF_HAIRDRESSERS);
-
-    // create queue for client changes
-    int change_queue = msgget(IPC_PRIVATE, IPC_CREAT | 0600);
-    if (change_queue == -1) {
-        perror("Create waiting room");
-        exit(1);
-    }
+    int change_queue = new_change_queue();
 
     // HAIRDRESSER
     int hairdresser_id = 0;
