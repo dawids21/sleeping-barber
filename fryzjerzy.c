@@ -13,11 +13,14 @@
 #include "fryzjerzy_semaphores_helpers.h"
 #include "fryzjerzy_waiting_room.h"
 
+// to simplify the program keep NUM_OF_CLIENTS * CUTS_PER_CLIENT / NUM_OF_HAIRDRESSER as integer
+
 #define SIZE_OF_WAITING_ROOM 3
 #define NUM_OF_HAIRDRESSERS 5
 #define NUM_OF_CLIENTS 10
 #define NUM_OF_CHAIRS 3
 #define COST_PER_CUT 30
+#define CUTS_PER_CLIENT 5
 
 int init_chairs(int num_of_chairs) {
     int chairs = semget(IPC_PRIVATE, 1, IPC_CREAT | 0600);
@@ -44,7 +47,7 @@ int main(int argc, char const *argv[]) {
         if (fork() == 0) {
             srand(getpid());
             d_log_num("start hairdresser", getpid());
-            for (int i = 0; i < 100; i++) {
+            for (int i = 0; i < NUM_OF_CLIENTS * CUTS_PER_CLIENT / NUM_OF_HAIRDRESSERS; i++) {
                 client client = take_client(waiting_room);
                 i_log_hairdresser_client("H Take client from waiting room.", hairdresser_id, client.id);
                 down(chairs, 0);
@@ -88,7 +91,7 @@ int main(int argc, char const *argv[]) {
             srand(getpid());
             client client = new_client(client_id, change_queue);
             d_log_num("start client", getpid());
-            for (int i = 0; i < 100; i++) {
+            for (int i = 0; i < CUTS_PER_CLIENT; i++) {
                 while (get_amount(client.money) < COST_PER_CUT) {
                     make_money(&client);
                 }
