@@ -34,7 +34,7 @@ client new_client(int id, int change_queue) {
 }
 
 void make_money(client *client) {
-    usleep(rand() % 500000);
+    usleep(rand() % 2000000);
     money earned;
     int random = rand();
     earned.ones = random % 5;

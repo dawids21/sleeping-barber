@@ -13,14 +13,11 @@
 #include "fryzjerzy_semaphores_helpers.h"
 #include "fryzjerzy_waiting_room.h"
 
-#define SIZE_OF_WAITING_ROOM 1
-#define NUM_OF_HAIRDRESSERS 1
-#define NUM_OF_CLIENTS 3
-#define NUM_OF_CHAIRS 1
+#define SIZE_OF_WAITING_ROOM 3
+#define NUM_OF_HAIRDRESSERS 5
+#define NUM_OF_CLIENTS 10
+#define NUM_OF_CHAIRS 3
 #define COST_PER_CUT 30
-
-#define EMPTY 1
-#define FULL 2
 
 int init_chairs(int num_of_chairs) {
     int chairs = semget(IPC_PRIVATE, 1, IPC_CREAT | 0600);
@@ -48,7 +45,6 @@ int main(int argc, char const *argv[]) {
             srand(getpid());
             d_log_num("start hairdresser", getpid());
             for (int i = 0; i < 100; i++) {
-                usleep(rand() % 500000);
                 client client = take_client(waiting_room);
                 i_log_hairdresser_client("H Take client from waiting room.", hairdresser_id, client.id);
                 down(chairs, 0);
@@ -60,11 +56,12 @@ int main(int argc, char const *argv[]) {
                     to_pay = count_maximum_coins(client.money, COST_PER_CUT);
                 }
                 i_log_num_money("C Found hairdresser. Pay for service. Client", client.id, to_pay);
+                usleep(rand() % 100000);
                 i_log_num("H Add money to cash machine. hairdresser", hairdresser_id);
                 add_cash(&cash_machine, to_pay);
                 int to_return = get_amount(to_pay) - COST_PER_CUT;
                 i_log_hairdresser_client("H Start service.", hairdresser_id, client.id);
-                usleep(rand() % 500000);
+                usleep(rand() % 5000000);
                 i_log_hairdresser_client("H Finish service.", hairdresser_id, client.id);
                 up(chairs, 0);
                 i_log_num("H Free chair hairdresser", hairdresser_id);
@@ -75,6 +72,7 @@ int main(int argc, char const *argv[]) {
                 d_log_num("get change for", client.id);
                 money to_send = subtract(change, to_pay);
                 d_log_money("send change", to_send);
+                usleep(rand() % 100000);
                 i_log_hairdresser_client("H Return change to client", hairdresser_id, client.id);
                 send_change(client, to_send);
                 d_log_num("add change to queue for client", client.id);
@@ -94,10 +92,13 @@ int main(int argc, char const *argv[]) {
                 while (get_amount(client.money) < COST_PER_CUT) {
                     make_money(&client);
                 }
+                usleep(rand() % 500000);
                 i_log_num("C Enter waiting room, look for free seats. Client", client.id);
                 while (!wait_for_free_seat(waiting_room)) {
                     i_log_num("C No free seats, exit. Client", client.id);
+                    usleep(rand() % 500000);
                     make_money(&client);
+                    usleep(rand() % 500000);
                     i_log_num("C Enter waiting room, look for free seats. Client", client.id);
                 }
                 i_log_num("C Get free seat. Wait for hairdresser. Client", client.id);
