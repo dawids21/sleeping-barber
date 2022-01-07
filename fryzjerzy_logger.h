@@ -3,7 +3,11 @@
 
 #include "fryzjerzy_money.h"
 
-#define LOG_LEVEL 2
+#define OFF 0
+#define INFO 1
+#define DEBUG 2
+
+#define LOG_LEVEL DEBUG
 
 void d_log(char *msg);
 
