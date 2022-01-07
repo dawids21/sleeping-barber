@@ -76,7 +76,7 @@ int main(int argc, char const *argv[]) {
                 money to_send = subtract(change, to_pay);
                 d_log_money("send change", to_send);
                 usleep(rand() % 100000);
-                i_log_hairdresser_client("H Return change to client", hairdresser_id, client.id);
+                i_log_hairdresser_client_money("H Return change to client.", hairdresser_id, client.id, to_send);
                 send_change(client, to_send);
                 d_log_num("add change to queue for client", client.id);
                 d_log("hairdresser finished");
