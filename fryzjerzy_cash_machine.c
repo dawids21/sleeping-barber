@@ -59,34 +59,34 @@ cash_machine init_cash_machine(int num_of_hairdressers) {
     return cash_machine;
 }
 
-void add_cash(cash_machine cash_machine, money to_add) {
+void add_cash(cash_machine *cash_machine, money to_add) {
     d_log_money("wait for cash machine to add cash", to_add);
-    down(cash_machine.semaphor, 0);
-    cash_machine.cash->ones += to_add.ones;
-    cash_machine.cash->twos += to_add.twos;
-    cash_machine.cash->fives += to_add.fives;
+    down(cash_machine->semaphor, 0);
+    cash_machine->cash->ones += to_add.ones;
+    cash_machine->cash->twos += to_add.twos;
+    cash_machine->cash->fives += to_add.fives;
     d_log("add cash to machine");
-    up(cash_machine.semaphor, 0);
-    notify_hairdressers(cash_machine);
+    up(cash_machine->semaphor, 0);
+    notify_hairdressers(*cash_machine);
 }
 
-money cash_machine_change(cash_machine cash_machine, int amount, int hairdresser) {
+money cash_machine_change(cash_machine *cash_machine, int amount, int hairdresser) {
     money change = {-1, -1, -1};
     while (is_change_incorrect(change)) {
         d_log_num("check for change hairdresser:", hairdresser);
-        down(cash_machine.hairdressers_semaphores, hairdresser);
+        down(cash_machine->hairdressers_semaphores, hairdresser);
         d_log_num("try to change hairdresser:", hairdresser);
-        down(cash_machine.semaphor, 0);
-        change = get_change(*cash_machine.cash, amount);
+        down(cash_machine->semaphor, 0);
+        change = get_change(*cash_machine->cash, amount);
         d_log_money("got change", change);
         if (is_change_correct(change)) {
             d_log("got correct change");
-            cash_machine.cash->ones -= change.ones;
-            cash_machine.cash->twos -= change.twos;
-            cash_machine.cash->fives -= change.fives;
+            cash_machine->cash->ones -= change.ones;
+            cash_machine->cash->twos -= change.twos;
+            cash_machine->cash->fives -= change.fives;
         }
-        up(cash_machine.semaphor, 0);
+        up(cash_machine->semaphor, 0);
     }
-    notify_hairdressers(cash_machine);
+    notify_hairdressers(*cash_machine);
     return change;
 }

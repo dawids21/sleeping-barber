@@ -12,8 +12,8 @@ typedef struct cash_machine {
 
 cash_machine init_cash_machine(int num_of_hairdressers);
 
-void add_cash(cash_machine cash_machine, money to_add);
+void add_cash(cash_machine *cash_machine, money to_add);
 
-money cash_machine_change(cash_machine cash_machine, int amount, int hairdresser);
+money cash_machine_change(cash_machine *cash_machine, int amount, int hairdresser);
 
 #endif

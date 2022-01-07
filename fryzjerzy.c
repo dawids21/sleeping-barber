@@ -57,14 +57,14 @@ int main(int argc, char const *argv[]) {
                 } else {
                     to_pay = count_maximum_coins(client.money, COST_PER_CUT);
                 }
-                add_cash(cash_machine, to_pay);
+                add_cash(&cash_machine, to_pay);
                 d_log_num("get money in machine for", client.id);
                 int to_return = get_amount(to_pay) - COST_PER_CUT;
                 down(chairs, 0);
                 usleep(rand() % 500000);
                 up(chairs, 0);
                 d_log_num("finished client", client.id);
-                money change = cash_machine_change(cash_machine, to_return, hairdresser_id);
+                money change = cash_machine_change(&cash_machine, to_return, hairdresser_id);
                 d_log_num("get change for", client.id);
                 money to_send = subtract(change, to_pay);
                 d_log_money("send change", to_send);
