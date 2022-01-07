@@ -37,9 +37,9 @@ void make_money(client *client) {
     usleep(rand() % 500000);
     money earned;
     int random = rand();
-    earned.ones = 1;
-    earned.twos = 1;
-    earned.fives = rand() % 2;
+    earned.ones = random % 5;
+    earned.twos = random % 3;
+    earned.fives = random % 2;
     i_log_num_money("C Earned by client", client->id, earned);
     client->money = add(client->money, earned);
     i_log_num_money("C Owned by client", client->id, client->money);
