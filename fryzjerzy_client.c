@@ -18,6 +18,7 @@ int new_change_queue() {
         perror("Create waiting room");
         exit(1);
     }
+    return change_queue;
 }
 
 client new_client(int id, int change_queue) {
