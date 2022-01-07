@@ -55,11 +55,11 @@ void send_change(client client, money change) {
     }
 }
 
-void wait_for_change(client client) {
+void wait_for_change(client *client) {
     change_msg change_msg;
-    if (msgrcv(client.change_queue, &change_msg, sizeof(change_msg.change), client.id, 0) == -1) {
+    if (msgrcv(client->change_queue, &change_msg, sizeof(change_msg.change), client->id, 0) == -1) {
         perror("Get change for client");
         exit(1);
     }
-    client.money = add(client.money, change_msg.change);
+    client->money = add(client->money, change_msg.change);
 }

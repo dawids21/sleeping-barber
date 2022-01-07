@@ -94,7 +94,7 @@ int main(int argc, char const *argv[]) {
                 take_seat(waiting_room, client);
                 d_log_num("take seat", client.id);
                 d_log_num("wait for change", client.id);
-                wait_for_change(client);
+                wait_for_change(&client);
                 d_log_num("get change", client.id);
                 d_log("client finished");
             }

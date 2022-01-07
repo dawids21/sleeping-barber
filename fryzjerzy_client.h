@@ -17,6 +17,6 @@ void make_money(client *client);
 
 void send_change(client client, money change);
 
-void wait_for_change(client client);
+void wait_for_change(client *client);
 
 #endif  // FRYZJERZY_CLIENT_H
