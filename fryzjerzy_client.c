@@ -33,15 +33,16 @@ client new_client(int id, int change_queue) {
     return client;
 }
 
-void make_money(client client) {
+void make_money(client *client) {
     usleep(rand() % 500000);
     money earned;
     int random = rand();
     earned.ones = 1;
     earned.twos = 1;
     earned.fives = rand() % 2;
-    i_log_num_money("Money earned by client", client.id, earned);
-    client.money = add(client.money, earned);
+    i_log_num_money("Earned by client", client->id, earned);
+    client->money = add(client->money, earned);
+    i_log_num_money("Owned by client", client->id, client->money);
 }
 
 void send_change(client client, money change) {

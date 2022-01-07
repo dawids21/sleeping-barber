@@ -13,7 +13,7 @@ int new_change_queue();
 
 client new_client(int id, int change_queue);
 
-void make_money(client client);
+void make_money(client *client);
 
 void send_change(client client, money change);
 

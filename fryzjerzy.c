@@ -84,11 +84,11 @@ int main(int argc, char const *argv[]) {
             d_log_num("start client", getpid());
             for (int i = 0; i < 100; i++) {
                 while (get_amount(client.money) < COST_PER_CUT) {
-                    make_money(client);
+                    make_money(&client);
                 }
                 d_log_num("wait for free seat", client.id);
                 while (!wait_for_free_seat(waiting_room)) {
-                    make_money(client);
+                    make_money(&client);
                 }
                 d_log_num("get free seat", client.id);
                 take_seat(waiting_room, client);
