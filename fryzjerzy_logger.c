@@ -53,3 +53,15 @@ void i_log_num_money(char *msg, int num, money money) {
         printf("%d %s %d money: %d %d %d\n", getpid(), msg, num, money.ones, money.twos, money.fives);
     }
 }
+
+void i_log_hairdresser_client(char *msg, int haidresser, int client) {
+    if (info()) {
+        printf("%d %s Haidresser %d Client %d\n", getpid(), msg, haidresser, client);
+    }
+}
+
+void i_log_hairdresser_client_money(char *msg, int haidresser, int client, money money) {
+    if (info()) {
+        printf("%d %s Haidresser %d Client %d, money: %d %d %d\n", getpid(), msg, haidresser, client, money.ones, money.twos, money.fives);
+    }
+}

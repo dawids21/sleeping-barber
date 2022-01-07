@@ -40,9 +40,9 @@ void make_money(client *client) {
     earned.ones = 1;
     earned.twos = 1;
     earned.fives = rand() % 2;
-    i_log_num_money("Earned by client", client->id, earned);
+    i_log_num_money("C Earned by client", client->id, earned);
     client->money = add(client->money, earned);
-    i_log_num_money("Owned by client", client->id, client->money);
+    i_log_num_money("C Owned by client", client->id, client->money);
 }
 
 void send_change(client client, money change) {

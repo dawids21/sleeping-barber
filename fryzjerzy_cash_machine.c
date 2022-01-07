@@ -65,6 +65,7 @@ void add_cash(cash_machine *cash_machine, money to_add) {
     cash_machine->cash->ones += to_add.ones;
     cash_machine->cash->twos += to_add.twos;
     cash_machine->cash->fives += to_add.fives;
+    i_log_money("H Currently in cash machine.", *cash_machine->cash);
     d_log("add cash to machine");
     up(cash_machine->semaphor, 0);
     notify_hairdressers(*cash_machine);
