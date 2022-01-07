@@ -13,11 +13,11 @@ _OBJS += fryzjerzy_waiting_room.o
 OBJS = $(patsubst %,$(ODIR)/%,$(_OBJS))
 
 $(OUT): $(OBJS) 
-	$(CC) -o $@ $^
+	$(CC) -Wall -o $@ $^
 
 $(ODIR)/%.o: $(SDIR)/%.c 
 	@mkdir -p $(@D)
-	$(CC) -c -o $@ $<
+	$(CC) -Wall -c -o $@ $<
 
 .PHONY: clean
 
