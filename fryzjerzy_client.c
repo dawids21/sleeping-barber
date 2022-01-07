@@ -27,6 +27,9 @@ client new_client(int id, int change_queue) {
     money.ones = 0;
     money.twos = 0;
     money.fives = 0;
+    client.money = money;
+    client.change_queue = change_queue;
+    return client;
 }
 
 void make_money(client client) {
